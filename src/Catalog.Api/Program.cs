@@ -1,4 +1,10 @@
 
+using Catalog.Application.Contracts.Persistance;
+using Catalog.Application.Handlers;
+using Catalog.Infrastructure.DatabaseContext;
+using Catalog.Infrastructure.Persistance.Repositories;
+using System.Reflection;
+
 namespace Catalog.Api
 {
     public class Program
@@ -13,6 +19,24 @@ namespace Catalog.Api
             // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
             builder.Services.AddEndpointsApiExplorer();
             builder.Services.AddSwaggerGen();
+
+
+            //Register AutoMapper
+            builder.Services.AddAutoMapper(typeof(Program).Assembly);
+
+            //Register Mediatr
+            var assemblies = new Assembly[]
+            {
+    Assembly.GetExecutingAssembly(),
+    typeof(GetAllBrandsHandler).Assembly
+            };
+            builder.Services.AddMediatR(cfg => cfg.RegisterServicesFromAssemblies(assemblies));
+
+            //Register Application Services
+            builder.Services.AddScoped<ICatalogContext, CatalogContext>();
+            builder.Services.AddScoped<IProductRepository, ProductRepository>();
+            builder.Services.AddScoped<IBrandRepository, ProductRepository>();
+            builder.Services.AddScoped<ITypesRepository, ProductRepository>();
 
             var app = builder.Build();
 
